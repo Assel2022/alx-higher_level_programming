@@ -1,27 +1,50 @@
-#include "Python.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <Python.h>
+
 /**
-  * print_python_list_info - Prints information about python objects
-  * @p: PyObject pointer to print info about
-  * Compile with:
-  * gcc -Wall -Werror -Wextra -pedantic -std=c99 -shared -Wl,-soname,libPython.so -o libPython.so -fPIC -I/usr/include/python3.4 103-python.c
-  */
-void print_python_list_info(PyObject *p)
+ * print_python_bytes - prints info about python lists
+ * @p: address of pyobject struct
+ */
+void print_python_bytes(PyObject *p)
 {
-	Py_ssize_t i, py_list_size;
-	PyObject *item;
-	const char *item_type;
-	PyListObject *list_object_cast;
+	size_t i, len, size;
+	char *str;
 
-	list_object_cast = (PyListObject *)p;
-	py_list_size = PyList_Size(p);
-
-	printf("[*] Size of the Python List = %d\n", (int) py_list_size);
-	printf("[*] Allocated = %d\n", (int)list_object_cast->allocated);
-	for (i = 0; i < py_list_size; i++)
+	printf("[.] bytes object info\n");
+	if (strcmp(p->ob_type->tp_name, "bytes"))
 	{
-		item = PyList_GetItem(p, i);
-		item_type = (PyObject*(item))->ob_size->tp_name;
-		printf("Element %d: %s\n", (int) i, item_type);
+		printf("  [ERROR] Invalid Bytes Object\n");
+		return;
 	}
+	size = ((PyVarObject *)p)->ob_size;
+	str = ((PyBytesObject *)p)->ob_sval;
+	len =  size + 1 > 10 ? 10 : size + 1;
+	printf("  size: %lu\n", size);
+	printf("  trying string: %s\n", str);
+	printf("  first %lu bytes: ", len);
+	for (i = 0; i < len; i++)
+		printf("%02hhx%s", str[i], i + 1 < len ? " " : "");
+	printf("\n");
 }
 
+/**
+ * print_python_list - prints info about python lists
+ * @p: address of pyobject struct
+ */
+void print_python_list(PyObject *p)
+{
+	int i;
+
+	printf("[*] Python list info\n");
+	printf("[*] Size of the Python List = %lu\n", ((PyVarObject *)p)->ob_size);
+	printf("[*] Allocated = %lu\n", ((PyListObject *)p)->allocated);
+	for (i = 0; i < ((PyVarObject *)p)->ob_size; i++)
+	{
+		printf("Element %d: %s\n", i,
+			((PyListObject *)p)->ob_item[i]->ob_type->tp_name);
+		if (!strcmp(((PyListObject *)p)->ob_item[i]->ob_type->tp_name, "bytes"))
+			print_python_bytes(((PyListObject *)p)->ob_item[i]);
+
+	}
+}
