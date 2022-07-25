@@ -1,80 +1,112 @@
 #!/usr/bin/python3
 
-"""OR-Tools solution to the N-queens problem."""
 import sys
-import time
-from ortools.sat.python import cp_model
 
 
-class NQueenSolutionPrinter(cp_model.CpSolverSolutionCallback):
-    """Print intermediate solutions."""
-
-    def __init__(self, queens):
-        cp_model.CpSolverSolutionCallback.__init__(self)
-        self.__queens = queens
-        self.__solution_count = 0
-        self.__start_time = time.time()
-
-    def solution_count(self):
-        return self.__solution_count
-
-    def on_solution_callback(self):
-        current_time = time.time()
-        print('Solution %i, time = %f s' %
-              (self.__solution_count, current_time - self.__start_time))
-        self.__solution_count += 1
-
-        all_queens = range(len(self.__queens))
-        for i in all_queens:
-            for j in all_queens:
-                if self.Value(self.__queens[j]) == i:
-                    # There is a queen in column j, row i.
-                    print('Q', end=' ')
-                else:
-                    print('_', end=' ')
-            print()
-        print()
+def init_board(n):
+    """
+    Initialize an `n`x`n` sized chessboard with 0's.
+    """
+    board = []
+    [board.append([]) for i in range(n)]
+    [row.append(' ') for i in range(n) for row in board]
+    return (board)
 
 
-
-def main(board_size):
-    # Creates the solver.
-    model = cp_model.CpModel()
-
-    # Creates the variables.
-    # The array index is the column, and the value is the row.
-    queens = [
-        model.NewIntVar(0, board_size - 1, 'x%i' % i) for i in range(board_size)
-    ]
-
-    # Creates the constraints.
-    # All rows must be different.
-    model.AddAllDifferent(queens)
-
-    # All columns must be different because the indices of queens are all
-    # different.
-
-    # No two queens can be on the same diagonal.
-    model.AddAllDifferent(queens[i] + i for i in range(board_size))
-    model.AddAllDifferent(queens[i] - i for i in range(board_size))
-
-    # Solve the model.
-    solver = cp_model.CpSolver()
-    solution_printer = NQueenSolutionPrinter(queens)
-    solver.parameters.enumerate_all_solutions = True
-    solver.Solve(model, solution_printer)
-
-    # Statistics.
-    print('\nStatistics')
-    print(f'  conflicts      : {solver.NumConflicts()}')
-    print(f'  branches       : {solver.NumBranches()}')
-    print(f'  wall time      : {solver.WallTime()} s')
-    print(f'  solutions found: {solution_printer.solution_count()}')
+def board_deepcopy(board):
+    """
+    Return a deepcopy of a chessboard.
+    """
+    if isinstance(board, list):
+        return list(map(board_deepcopy, board))
+    return (board)
 
 
-if __name__ == '__main__':
-    # By default, solve the 8x8 problem.
-    size = 8
-    if len(sys.argv) > 1:
-        size = int(sys.argv[1])
-    main(size)
+def get_solution(board):
+    """
+    This function gets and retunrs the solution solved.
+    """
+    solution = []
+    for r in range(len(board)):
+        for c in range(len(board)):
+            if board[r][c] == "Q":
+                solution.append([r, c])
+                break
+    return (solution)
+
+
+def xout(board, row, col):
+    """
+    X out spots on a chessboard.
+    """
+    for c in range(col + 1, len(board)):
+        board[row][c] = "x"
+    for c in range(col - 1, -1, -1):
+        board[row][c] = "x"
+    for r in range(row + 1, len(board)):
+        board[r][col] = "x"
+    for r in range(row - 1, -1, -1):
+        board[r][col] = "x"
+    c = col + 1
+    for r in range(row + 1, len(board)):
+        if c >= len(board):
+            break
+        board[r][c] = "x"
+        c += 1
+    c = col - 1
+    for r in range(row - 1, -1, -1):
+        if c < 0:
+            break
+        board[r][c]
+        c -= 1
+    c = col + 1
+    for r in range(row - 1, -1, -1):
+        if c >= len(board):
+            break
+        board[r][c] = "x"
+        c += 1
+    c = col - 1
+    for r in range(row + 1, len(board)):
+        if c < 0:
+            break
+        board[r][c] = "x"
+        c -= 1
+
+
+def recursive_solve(board, row, queens, solutions):
+    """
+    Recursively solve an N-queens puzzle
+    """
+    if queens == len(board):
+        solutions.append(get_solution(board))
+        return (solutions)
+
+    for c in range(len(board)):
+        if board[row][c] == " ":
+            tmp_board = board_deepcopy(board)
+            tmp_board[row][c] = "Q"
+            xout(tmp_board, row, c)
+            solutions = recursive_solve(tmp_board, row + 1,
+                                        queens + 1, solutions)
+
+    return (solutions)
+
+
+if __name__ == "__main__":
+    """
+    Program execution starts here.
+    """
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
+    if sys.argv[1].isdigit() is False:
+        print("N must be a number")
+        sys.exit(1)
+    if int(sys.argv[1]) < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    board = init_board(int(sys.argv[1]))
+    solutions = recursive_solve(board, 0, 0, [])
+    for sol in solutions:
+        print(sol)
