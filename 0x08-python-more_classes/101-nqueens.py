@@ -3,7 +3,7 @@
 """
 File: 101-nqueens.py
 Desc: The program in this module solves the N queens problem.
-Author: Assel (Assel 2022)
+Author: Assel (Assel2022)
 Date Created: Jul 25 2022
 """
 import sys
@@ -99,10 +99,13 @@ def recursive_solve(board, row, queens, solutions):
 
 
 if __name__ == "__main__":
+    """
+    Program execution starts here.
+    """
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    if sys.argv[1].isdigit() != True:
+    if sys.argv[1].isdigit() is False:
         print("N must be a number")
         sys.exit(1)
     if int(sys.argv[1]) < 4:
