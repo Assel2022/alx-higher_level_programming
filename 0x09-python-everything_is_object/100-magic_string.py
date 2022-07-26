@@ -1,4 +1,4 @@
 #!/usr/bin/python3
-void print_python_int(PyObject *p):
-    return (0)
-print(void print_python_int(PyObject *p))
+def magic_string(static={"count": 0}):
+    static["count"] += 1
+    return str("BestSchool, " * static["count"])[:-2]
