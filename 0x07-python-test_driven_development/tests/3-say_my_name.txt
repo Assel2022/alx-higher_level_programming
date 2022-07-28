@@ -9,7 +9,7 @@ Generating Test Cases for ``3-say_my_name`` module.                =
 File: 3-say_my_name.txt                                            =
 Desc: This file contains most possible edge cases for the function =
       ``say_my_name`` in the ``3-say_my_name`` module              =
-Author: Assel                                                      =
+Author: Assel Kebede                                               =
 Date Created: Jul 24 2022                                          =
                                                                    =
 ====================================================================
@@ -19,20 +19,20 @@ Date Created: Jul 24 2022                                          =
 Let's test the function by supplying valid arguments as ``first_name``
 and ``second_name``.
 
->>> say_my_name("Assel")
-My name is Assel
+>>> say_my_name("Assel", "Kebede")
+My name is Assel Kebede
 
->>> say_my_name("Assel2022")
-My name is Assel
+>>> say_my_name("Assel", "2022")
+My name is Assel 2022
 
->>> say_my_name("Assel22")
-My name is Assel22
+>>> say_my_name("Assel 2022", "Kebede 33")
+My name is Assel 2022 Kebede 33
 
 Let's test the function with the second argument being optional.
 The argument ``last_name`` is optional
 
->>> say_my_name("Assel2022")
-My name is Assel2022
+>>> say_my_name("2022")
+My name is 2022
 
 >>> say_my_name("12345")
 My name is 12345 
@@ -41,17 +41,17 @@ Let's test the function by passing some non-string arguments.
 The function raises a TypeError Exception when some non-string
 argument is passed to it.
 
->>> say_my_name(None, "Crazy")
+>>> say_my_name(None, "2022")
 Traceback (most recent call last):
 ...
 TypeError: first_name must be a string
 
->>> say_my_name("Assel", 34)
+>>> say_my_name("2022", 34)
 Traceback (most recent call last):
 ...
 TypeError: last_name must be a string
 
->>> say_my_name(["Assel", "Crazy"])
+>>> say_my_name(["2022", "2022"])
 Traceback (most recent call last):
 ...
 TypeError: first_name must be a string
