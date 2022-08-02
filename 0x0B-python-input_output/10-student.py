@@ -1,32 +1,31 @@
 #!/usr/bin/python3
-""" Module that defines the class Student
+
+"""
+File: 10-student.py
+Desc: This module deals with classes and json
+Author: Assel
+Date Created: Aug 2 2022
 """
 
 
-class Student:
-    """ Class to create student instances """
-
+class Student():
+    """
+    A simple stundent class.
+    """
     def __init__(self, first_name, last_name, age):
-        """ Special method to initialize """
+        """
+        This function initializes the object parameters.
+        """
         self.first_name = first_name
         self.last_name = last_name
         self.age = age
 
     def to_json(self, attrs=None):
-        """ Method that returns directory description """
-        obj = self.__dict__.copy()
-        if type(attrs) is list:
-
-            for item in attrs:
-                if type(item) is not str:
-                    return obj
-
-            d_list = {}
-
-            for iatr in range(len(attrs)):
-                for satr in obj:
-                    if attrs[iatr] == satr:
-                        d_list[satr] = obj[satr]
-            return d_list
-
-        return obj 
+        """
+        This function retrieves a dictionary representation
+        of a Student instance
+        """
+        if type(attrs) == list and all(type(i) == str for i in attrs):
+            return ({key: getattr(self, key)
+                    for key in attrs if hasattr(self, key)})
+        return self.__dict__ 
