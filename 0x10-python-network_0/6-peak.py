@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-""" a function to find an element in list whose neighbors are both < it"""
-
+""" a function to that finds a peak in a list of unsorted integers
 
 def find_peak(list_of_integers):
     """ function using recursion """
