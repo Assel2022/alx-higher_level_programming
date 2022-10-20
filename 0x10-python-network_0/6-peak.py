@@ -1,16 +1,25 @@
 #!/usr/bin/python3
-"""contains the function find_peak"""
+
+"""This module contains a function that finds a peak in a list
+of unsorted integers."""
 
 
 def find_peak(list_of_integers):
-    """finds a peak in a list of unsorted integers"""
-    li = list_of_integers
-    l = len(li)
-    if l == 0:
-        return
-    m = l // 2
-    if (m == l - 1 or li[m] >= li[m + 1]) and (m == 0 or li[m] >= li[m - 1]):
-        return li[m]
-    if m != l - 1 and li[m + 1] > li[m]:
-        return find_peak(li[m + 1:])
-    return find_peak(li[:m])
+    if list_of_integers == []:
+        return None
+
+    if len(list_of_integers) < 3:
+        return max(list_of_integers)
+
+    max_index = int(len(list_of_integers) / 2)
+    peack_number = list_of_integers[max_index]
+
+    if (peack_number > list_of_integers[max_index - 1] and
+            peack_number > list_of_integers[max_index + 1]):
+        return peack_number
+
+    elif peack_number <= list_of_integers[max_index + 1]:
+        return find_peak(list_of_integers[max_index + 1:])
+
+    else:
+        return find_peak(list_of_integers[:max_index])
